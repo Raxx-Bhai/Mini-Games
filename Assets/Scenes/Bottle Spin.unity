@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 36708849}
   - component: {fileID: 36708848}
   - component: {fileID: 36708847}
-  - component: {fileID: 36708846}
+  - component: {fileID: 36708850}
   m_Layer: 0
   m_Name: Base
   m_TagString: Untagged
@@ -138,29 +138,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!136 &36708846
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 36708845}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!23 &36708847
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -184,7 +161,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 14636d3870817d04ea6251561ded789f, type: 2}
+  - {fileID: 2100000, guid: 5abb3e42b7b26f442afa3f3d97b06d90, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -224,11 +201,32 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.1, z: 0}
-  m_LocalScale: {x: 100, y: 0.1, z: 100}
+  m_LocalScale: {x: 20, y: 0.1, z: 20}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &36708850
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 36708845}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.0000001, y: 2, z: 1.0000002}
+  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!1 &328383812
 GameObject:
   m_ObjectHideFlags: 0
@@ -559,7 +557,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3484656812324204950, guid: 9d5aed0406e76f040b845072007daa70, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.5
+      value: -0.719
       objectReference: {fileID: 0}
     - target: {fileID: 3484656812324204950, guid: 9d5aed0406e76f040b845072007daa70, type: 3}
       propertyPath: m_LocalRotation.w
@@ -714,8 +712,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bottleRb: {fileID: 1282664783}
-  minForce: 50
-  maxForce: 150
+  minForce: 20
+  maxForce: 30
   CoefficientofFriction: 0.3
   resultText: {fileID: 719472510}
 --- !u!54 &1282664783
@@ -728,7 +726,7 @@ Rigidbody:
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0.5
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -764,10 +762,10 @@ CapsuleCollider:
   m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.343409
-  m_Height: 0.686818
+  m_Radius: 0.33751345
+  m_Height: 0.6750269
   m_Direction: 1
-  m_Center: {x: 0.156591, y: -0.073700905, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1291171213
 GameObject:
   m_ObjectHideFlags: 0
@@ -1067,7 +1065,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1282664782}
         m_TargetAssemblyTypeName: BottleSpin, Assembly-CSharp
         m_MethodName: SpinBottle
         m_Mode: 1
