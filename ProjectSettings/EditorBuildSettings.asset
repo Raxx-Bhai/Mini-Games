@@ -6,8 +6,23 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Scenes/Main Menu.unity
+    guid: 1a0d6ab3947779042a9fe0ac2bb2ff39
+  - enabled: 1
+    path: Assets/Scenes/Rubik's Cube.unity
+    guid: 50148d1146d6f7542a7ded86572cea33
+  - enabled: 1
+    path: Assets/Scenes/Coin Toss Scene.unity
+    guid: 2647c7c7de1355741b6659de4c30a79c
+  - enabled: 1
+    path: Assets/Scenes/Bottle Spin.unity
+    guid: a07576cb278db134a804c83414341b4b
+  - enabled: 1
+    path: Assets/Scenes/Dice Roll.unity
+    guid: 6db629f067fa086409ae54863e6436a0
+  - enabled: 1
+    path: Assets/Scenes/Game End.unity
+    guid: ea28f3507e039824da920c1ebd28e962
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

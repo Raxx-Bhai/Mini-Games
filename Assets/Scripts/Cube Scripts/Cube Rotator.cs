@@ -7,6 +7,10 @@ using UnityEngine.SceneManagement;
 public class CubeRotator : MonoBehaviour
 {
     public HUDFlicker hudflicker;
+    public GameManagerScript game;
+    public TMPro.TextMeshProUGUI DisplayAmount;
+
+    public AudioClip Raudio;
 
     public float rotationSpeed = 300f; // degrees per second
 
@@ -14,6 +18,12 @@ public class CubeRotator : MonoBehaviour
     private int direction = +1;
     private int movecounter = 0;
     private string movetracker = "None";
+
+    private void Start()
+    {
+        game.Amount = game.LoadAmount();
+        DisplayAmount.text = $"${game.Amount}";
+    }
 
     private List<Transform> GetFaceCubes(Vector3 axis, int layer) // -1, 0, +1
     {
@@ -34,17 +44,17 @@ public class CubeRotator : MonoBehaviour
         return faceCubes;
     }
     // Public moves (WCA style notation)
-    public void RotateRight() { if (!isRotating) StartCoroutine(RotateFace(Vector3.forward, +1, direction)); movecounter++; movetracker = "Right"; CheckGamble(); }
-    public void RotateLeft() { if (!isRotating) StartCoroutine(RotateFace(Vector3.forward, -1, -direction)); movecounter++; movetracker = "Left"; CheckGamble(); }
-    public void RotateUp() { if (!isRotating) StartCoroutine(RotateFace(Vector3.up, +1, direction)); movecounter++; movetracker = "Up"; CheckGamble(); }
-    public void RotateDown() { if (!isRotating) StartCoroutine(RotateFace(Vector3.up, -1, -direction)); movecounter++; movetracker = "Down"; CheckGamble(); }
-    public void RotateFront() { if (!isRotating) StartCoroutine(RotateFace(Vector3.right, +1, direction)); movecounter++; movetracker = "Front"; CheckGamble(); }
-    public void RotateBack() { if (!isRotating) StartCoroutine(RotateFace(Vector3.right, -1, -direction)); movecounter++; movetracker = "Back"; CheckGamble(); }
+    public void RotateRight() { if (!isRotating) StartCoroutine(RotateFace(Vector3.forward, +1, direction)); AudioSource.PlayClipAtPoint(Raudio, Camera.main.transform.position); movecounter++; movetracker = "Right"; CheckGamble(); }
+    public void RotateLeft() { if (!isRotating) StartCoroutine(RotateFace(Vector3.forward, -1, -direction)); AudioSource.PlayClipAtPoint(Raudio, Camera.main.transform.position); movecounter++; movetracker = "Left"; CheckGamble(); }
+    public void RotateUp() { if (!isRotating) StartCoroutine(RotateFace(Vector3.up, +1, direction)); AudioSource.PlayClipAtPoint(Raudio, Camera.main.transform.position); movecounter++; movetracker = "Up"; CheckGamble(); }
+    public void RotateDown() { if (!isRotating) StartCoroutine(RotateFace(Vector3.up, -1, -direction)); AudioSource.PlayClipAtPoint(Raudio, Camera.main.transform.position); movecounter++; movetracker = "Down"; CheckGamble(); }
+    public void RotateFront() { if (!isRotating) StartCoroutine(RotateFace(Vector3.right, +1, direction)); AudioSource.PlayClipAtPoint(Raudio, Camera.main.transform.position); movecounter++; movetracker = "Front"; CheckGamble(); }
+    public void RotateBack() { if (!isRotating) StartCoroutine(RotateFace(Vector3.right, -1, -direction)); AudioSource.PlayClipAtPoint(Raudio, Camera.main.transform.position); movecounter++; movetracker = "Back"; CheckGamble(); }
 
     // Middle slices
-    public void RotateMiddle() { if (!isRotating) StartCoroutine(RotateFace(Vector3.forward, 0, -direction)); movecounter++; movetracker = "Middle"; CheckGamble(); }
-    public void RotateEquator() { if (!isRotating) StartCoroutine(RotateFace(Vector3.up, 0, -direction)); movecounter++; movetracker = "Equator"; CheckGamble(); }
-    public void RotateStanding() { if (!isRotating) StartCoroutine(RotateFace(Vector3.right, 0, -direction)); movecounter++; movetracker = "Standing"; CheckGamble(); }
+    public void RotateMiddle() { if (!isRotating) StartCoroutine(RotateFace(Vector3.forward, 0, -direction)); AudioSource.PlayClipAtPoint(Raudio, Camera.main.transform.position); movecounter++; movetracker = "Middle"; CheckGamble(); }
+    public void RotateEquator() { if (!isRotating) StartCoroutine(RotateFace(Vector3.up, 0, -direction)); AudioSource.PlayClipAtPoint(Raudio, Camera.main.transform.position); movecounter++; movetracker = "Equator"; CheckGamble(); }
+    public void RotateStanding() { if (!isRotating) StartCoroutine(RotateFace(Vector3.right, 0, -direction)); AudioSource.PlayClipAtPoint(Raudio, Camera.main.transform.position); movecounter++; movetracker = "Standing"; CheckGamble(); }
 
     private void CheckGamble()
     {
@@ -79,6 +89,7 @@ public class CubeRotator : MonoBehaviour
         else if (movetracker == "Standing") { hudflicker.FlickerLayer("Standing"); }
         else if (movetracker == "Back") { hudflicker.FlickerLayer("Back"); }
 
+        StartCoroutine(LoadCorrespondingScene());
     }
 
     private IEnumerator RotateFace(Vector3 axis, int layer, int direction)
@@ -115,6 +126,15 @@ public class CubeRotator : MonoBehaviour
 
         Destroy(pivot);
         isRotating = false;
+    }
+
+    private IEnumerator LoadCorrespondingScene()
+    {
+        yield return new WaitForSeconds(1f);
+
+        if(movetracker == "Left" || movetracker == "Middle" || movetracker == "Right") { SceneManager.LoadScene("Coin Toss Scene"); }
+        else if (movetracker == "Up" || movetracker == "Equator" || movetracker == "Down") { SceneManager.LoadScene("Bottle Spin"); }
+        else if (movetracker == "Front" || movetracker == "Standing" || movetracker == "Back") { SceneManager.LoadScene("Dice Roll"); }
     }
 
     //Invert Direction of Rotation

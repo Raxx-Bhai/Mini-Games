@@ -1,53 +1,107 @@
-using UnityEngine;
+using System.Collections;
 using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BottleSpin : MonoBehaviour
 {
-    [Header("Bottle Settings")]
-    public Rigidbody bottleRb;
-    public float minForce = 50f;
-    public float maxForce = 150f;
-    public float CoefficientofFriction = 0.3f;
+    [Header("Spin Settings")]
+    public float minSpinSpeed = 400f;
+    public float maxSpinSpeed = 700f;
+    public float deceleration = 2f; // Higher = faster slowdown
+
+    [Header("Panel")]
+    public GameObject betPanel;
+    public GameObject SpinPanel;
+    public TMPro.TextMeshProUGUI displayAmount;
+
+    public GameManagerScript game;
+
+    public AudioClip Baudio;
+
+    private float currentSpinSpeed = 0f;
+    private bool spinning = false;
+    private int betAmount;
 
     [Header("UI")]
     public TMP_Text resultText;
+    public TextMeshProUGUI Message;
 
-    private bool isSpinning = false;
-
-    public void SpinBottle()
+    private void Start()
     {
-        if (!isSpinning)
+        game.Amount = game.LoadAmount();
+        displayAmount.text = $"${game.Amount}";
+        ShowBetPannel();
+    }
+
+    void ShowBetPannel()
+    {
+        if (game.Amount <= 25) { game.Bet_Amount = game.Amount; SpinPanel.SetActive(true); }
+        else { betPanel.SetActive(true); }
+    }
+
+    public void OnBetChosen(string betString)
+    {
+        betAmount = int.Parse(betString.Replace("$", ""));
+
+        if (betAmount > game.Amount) { Message.text = "Please enter a valid Amount!"; return; }
+        else { game.Bet_Amount = betAmount; betPanel.SetActive(false); SpinPanel.SetActive(true); }
+    }
+
+    void Update()
+    {
+        if (spinning)
         {
-            // Reset spin
-            bottleRb.angularVelocity = Vector3.zero;
+            // Rotate bottle on Y-axis
+            transform.Rotate(0, currentSpinSpeed * Time.deltaTime, 0, Space.Self);
 
-            // Apply random spin force (Impulse)
-            float randomForce = Random.Range(minForce, maxForce);
-            bottleRb.AddTorque(Vector3.up * randomForce, ForceMode.Impulse);
+            // Smooth deceleration using ease-out
+            currentSpinSpeed = Mathf.Lerp(currentSpinSpeed, 0, Time.deltaTime * deceleration);
 
-            isSpinning = true;
+            // Stop condition
+            if (currentSpinSpeed < 3f)
+            {
+                spinning = false;
+                currentSpinSpeed = 0f;
+                SnapRotation();
+                DecideWinner();
+            }
         }
     }
 
-    private void Update()
+    public void StartSpin()
     {
-        if (isSpinning)
-        {
-            if (bottleRb.angularVelocity.magnitude > 0.01f)
-            {
-                // Apply friction continuously
-                Vector3 friction = -bottleRb.angularVelocity.normalized * CoefficientofFriction;
-                bottleRb.AddTorque(friction, ForceMode.Acceleration);
-            }
-            else
-            {
-                // Spin stopped
-                isSpinning = false;
+        SpinPanel.SetActive(false);
+        currentSpinSpeed = Random.Range(minSpinSpeed, maxSpinSpeed);
+        AudioSource.PlayClipAtPoint(Baudio, Camera.main.transform.position);
+        spinning = true;
+        resultText.text = "";
+    }
 
-                float finalY = bottleRb.transform.eulerAngles.y;
-                string winner = (finalY % 360f < 180f) ? "Cyan (You)" : "Pink (Opponent)";
-                resultText.text = "Winner: " + winner;
-            }
-        }
+    void SnapRotation()
+    {
+        // Optional: Snap Y rotation to nearest degree to avoid tiny fractions
+        float y = transform.eulerAngles.y;
+        transform.rotation = Quaternion.Euler(0, y, 0);
+    }
+
+    void DecideWinner()
+    {
+        float yRotation = transform.eulerAngles.y % 360f;
+
+        if (yRotation >= 0 && yRotation < 180) { resultText.text = "You Won"; game.won = true; }
+        else { resultText.text = "Opponent Won!"; game.won = false; }
+
+        StartCoroutine(LoadPreviousScene());
+    }
+
+    IEnumerator LoadPreviousScene()
+    {
+        yield return new WaitForSeconds(0.5f);
+        game.GameResult();
+        game.SaveAmount();
+
+        yield return new WaitForSeconds(1.5f);
+        SceneManager.LoadScene("Rubik's Cube");
     }
 }

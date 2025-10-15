@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using TMPro;
+using System.Collections;
 
 public class CoinTossManager : MonoBehaviour
 {
@@ -7,7 +10,16 @@ public class CoinTossManager : MonoBehaviour
     public GameObject decidePanel;
     public GameObject invertPanel;
     public GameObject box;
+    public GameObject boxhead;
     public Transform coin;
+
+    public AudioClip caudio;
+
+    public GameManagerScript game;
+
+    public TMPro.TextMeshProUGUI resulttext;
+    public TMPro.TextMeshProUGUI Message;
+    public TMPro.TextMeshProUGUI displayAmount;
 
     private int betAmount;
     private CoinSide playerChoice;
@@ -17,17 +29,23 @@ public class CoinTossManager : MonoBehaviour
 
     void Start()
     {
+        game.Amount = game.LoadAmount();
+        displayAmount.text = $"${game.Amount}";
         ShowBetPanel();
     }
 
-    #region Panels
-    void ShowBetPanel() => betPanel.SetActive(true);
+    void ShowBetPanel()
+    {
+        if (game.Amount <= 25) { game.Bet_Amount = game.Amount; decidePanel.SetActive(true); }
+        else { betPanel.SetActive(true); }
+    }
 
     public void OnBetChosen(string betString)
     {
         betAmount = int.Parse(betString.Replace("$", ""));
-        betPanel.SetActive(false);
-        decidePanel.SetActive(true);
+
+        if (betAmount > game.Amount) { Message.text = "Please enter a valid Amount!"; return; }
+        else { game.Bet_Amount = betAmount; betPanel.SetActive(false); decidePanel.SetActive(true); }
     }
 
     public void OnChoiceMade(string choice)
@@ -43,9 +61,7 @@ public class CoinTossManager : MonoBehaviour
         if (invert) PlayInvertAnimation();
         else PlayDirectOpenAnimation();
     }
-    #endregion
 
-    #region Coin Toss
     private System.Collections.IEnumerator CoinTossSequence()
     {
         // Coin rises
@@ -62,6 +78,7 @@ public class CoinTossManager : MonoBehaviour
         // Move forward along Z with spin
         Vector3 endPos = new Vector3(startPos.x, upPos.y, 20f);
         t = 0;
+        AudioSource.PlayClipAtPoint(caudio, coin.transform.position);
         while (t < 1f)
         {
             t += Time.deltaTime;
@@ -77,7 +94,7 @@ public class CoinTossManager : MonoBehaviour
         coin.SetParent(box.transform);
         coin.localPosition = Vector3.zero;
 
-        // 🔥 NEW: Set coin orientation based on result
+        // NEW: Set coin orientation based on result
         if (coinResult == CoinSide.Heads)
         {
             // Heads up = default prefab rotation
@@ -108,25 +125,42 @@ public class CoinTossManager : MonoBehaviour
             yield return null;
         }
     }
-    #endregion
-
-    #region Reveal
     void PlayInvertAnimation()
     {
-        // TODO: animate box flip
+        boxhead.transform.position += new Vector3(0, 2, 0);
         CheckResult(playerChoice != coinResult); // invert flips the result
     }
 
     void PlayDirectOpenAnimation()
     {
         // TODO: animate box opening
+        boxhead.transform.position += new Vector3(0, 2, 0);
         CheckResult(playerChoice == coinResult);
     }
 
     void CheckResult(bool win)
     {
-        if (win) Debug.Log("Player Wins!");
-        else Debug.Log("Player Loses!");
+        if (win)
+        {
+            game.won = true;
+            resulttext.text = "You Won!";
+        }
+        else
+        {
+            game.won = false;
+            resulttext.text = "You Lost!";
+        }
+
+        StartCoroutine(LoadPreviousScene());
     }
-    #endregion
+
+    IEnumerator LoadPreviousScene()
+    {
+        yield return new WaitForSeconds(0.5f);
+        game.GameResult();
+        game.SaveAmount();
+
+        yield return new WaitForSeconds(1.5f);
+        SceneManager.LoadScene("Rubik's Cube");
+    }
 }
